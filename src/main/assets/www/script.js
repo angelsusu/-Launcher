@@ -968,30 +968,35 @@ let lastColorChangeTime = Date.now();
 
 update();
 
-function onTouchStart(dx, dy) {
-    let x = parseFloat(dx);
-    let y = parseFloat(dy);
-    alert("onTouchStart:" + x + ":" + y);
-    pointers[0].id = 0;
-    pointers[0].down = true;
-    pointers[0].x = x;
-    pointers[0].y = y;
-    pointers[0].color = generateColor();
-}
+function onTouchStart(jsonStr) {
+    let pointerList = eval(jsonStr);
+    for (let i = 0; i < pointerList.length; ++i) {
+    if (i >= pointers.length) {
+    pointers.push(new pointerPrototype());
+    }
+    let x = pointerList[i].x;
+    let y = pointerList[i].y;
+    pointers[i].id = pointerList[i].id;
+    pointers[i].down = true;
+    pointers[i].x = x;
+    pointers[i].y = y;
+    pointers[i].color = generateColor();
+    }
+    }
     
-function onTouchMove(dx, dy) {
-    let x = parseFloat(dx);
-    let y = parseFloat(dy);
-    alert("onTouchMove:" + x + ":" + y);
-    let pointer = pointers[0];
+    function onTouchMove(jsonStr) {
+    let pointerList = eval(jsonStr);
+    for (let i = 0; i < pointerList.length; i++) {
+    let pointer = pointers[i];
     pointer.moved = pointer.down;
-    pointer.dx = (x - pointer.x) * 8.0;
-    pointer.dy = (y - pointer.y) * 8.0;
-    pointer.x = x;
-    pointer.y = y;
-}
+    pointer.dx = (pointerList[i].x - pointer.x) * 8.0;
+    pointer.dy = (pointerList[i].y - pointer.y) * 8.0;
+    pointer.x = pointerList[i].x;
+    pointer.y = pointerList[i].y;
+    }
+    }
     
-function onTouchEnd() {
+    function onTouchEnd() {
     for (let i = 0; i < pointers.length; i++) {
     pointers[i].down = false;
     } 

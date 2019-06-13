@@ -136,6 +136,7 @@ import com.android.launcher3.widget.WidgetHostViewLoader;
 import com.android.launcher3.widget.WidgetListRowEntry;
 import com.android.launcher3.widget.WidgetsFullSheet;
 import com.android.launcher3.widget.custom.CustomWidgetParser;
+import com.google.gson.Gson;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -383,14 +384,20 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        float x = px2dip(ev.getX());
-        float y = px2dip(ev.getY());
-        switch (ev.getAction()) {
+        int action = ev.getAction();
+        String jsonStr = "";
+        if (ev.getPointerCount() > 1) {
+            action = ev.getActionMasked();
+        }
+        switch (action) {
             case MotionEvent.ACTION_DOWN:
-                mWebView.loadUrl("javascript:onTouchStart(1, " + x + ", " + y + ")");
+            case MotionEvent.ACTION_POINTER_DOWN:
+                jsonStr = getPointerJsonValue(ev);
+                mWebView.loadUrl("javascript:onTouchStart("+ jsonStr +")");
                 break;
             case MotionEvent.ACTION_MOVE:
-                mWebView.loadUrl("javascript:onTouchMove(" + x + ", " + y + ")");
+                jsonStr = getPointerJsonValue(ev);
+                mWebView.loadUrl("javascript:onTouchMove(" + jsonStr + ")");
                 break;
             case MotionEvent.ACTION_UP:
                 mWebView.loadUrl("javascript:onTouchEnd()");
@@ -399,6 +406,32 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
                 break;
         }
         return super.dispatchTouchEvent(ev);
+    }
+
+    private String getPointerJsonValue(MotionEvent ev) {
+        List<Pointer> pointerList = new ArrayList<>();
+        Gson gson = new Gson();
+        String jsonStr = "";
+        for (int index = 0; index < ev.getPointerCount(); ++index) {
+            int pointId = ev.getPointerId(index);
+            float pointX = px2dip(ev.getX(index));
+            float pointY = px2dip(ev.getY(index));
+            pointerList.add(new Pointer(pointX, pointY, pointId));
+        }
+        jsonStr = gson.toJson(pointerList);
+        return jsonStr;
+    }
+
+    private class Pointer {
+        float x = 0;
+        float y = 0;
+        int id = -1;
+
+        public Pointer(float x, float y, int id) {
+            this.x = x;
+            this.y = y;
+            this.id = id;
+        }
     }
 
     public float px2dip(float pxValue) {
