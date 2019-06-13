@@ -29,6 +29,7 @@ import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.ItemInfoMatcher;
 import com.android.launcher3.util.MultiHashMap;
 import com.android.launcher3.widget.WidgetListRowEntry;
+import static com.android.launcher3.config.FeatureFlags.REMOVE_DRAWER;
 
 import java.util.ArrayList;
 import java.util.concurrent.Executor;
@@ -63,7 +64,9 @@ public abstract class BaseModelUpdateTask implements ModelUpdateTask {
                 Log.d(TAG, "Ignoring model task since loader is pending=" + this);
             }
             // Loader has not yet run.
-            return;
+            if(!REMOVE_DRAWER) {
+                return;
+            }
         }
         execute(mApp, mDataModel, mAllAppsList);
     }

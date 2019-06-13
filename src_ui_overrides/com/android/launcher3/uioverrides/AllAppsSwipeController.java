@@ -2,6 +2,7 @@ package com.android.launcher3.uioverrides;
 
 import static com.android.launcher3.LauncherState.ALL_APPS;
 import static com.android.launcher3.LauncherState.NORMAL;
+import static com.android.launcher3.config.FeatureFlags.REMOVE_DRAWER;
 
 import android.view.MotionEvent;
 
@@ -41,6 +42,9 @@ public class AllAppsSwipeController extends AbstractStateChangeTouchController {
             return false;
         }
         if (mLauncher.isInState(ALL_APPS) && !mLauncher.getAppsView().shouldContainerScroll(ev)) {
+            return false;
+        }
+        if (REMOVE_DRAWER) {
             return false;
         }
         return true;

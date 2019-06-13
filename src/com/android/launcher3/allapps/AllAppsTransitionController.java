@@ -12,6 +12,7 @@ import static com.android.launcher3.anim.Interpolators.FAST_OUT_SLOW_IN;
 import static com.android.launcher3.anim.Interpolators.LINEAR;
 import static com.android.launcher3.anim.PropertySetter.NO_ANIM_PROPERTY_SETTER;
 import static com.android.launcher3.util.SystemUiController.UI_STATE_ALL_APPS;
+import static com.android.launcher3.config.FeatureFlags.REMOVE_DRAWER;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -163,6 +164,10 @@ public class AllAppsTransitionController implements StateHandler, OnDeviceProfil
     @Override
     public void setStateWithAnimation(LauncherState toState,
             AnimatorSetBuilder builder, AnimationConfig config) {
+        if (REMOVE_DRAWER) {
+            return;
+        }
+
         float targetProgress = toState.getVerticalProgress(mLauncher);
         if (Float.compare(mProgress, targetProgress) == 0) {
             setAlphas(toState, config, builder);
