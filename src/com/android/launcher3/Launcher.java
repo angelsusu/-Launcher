@@ -408,6 +408,11 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
         return super.dispatchTouchEvent(ev);
     }
 
+    /**
+     * 转化为传递给js的参数
+     * @param ev
+     * @return
+     */
     private String getPointerJsonValue(MotionEvent ev) {
         List<Pointer> pointerList = new ArrayList<>();
         Gson gson = new Gson();
